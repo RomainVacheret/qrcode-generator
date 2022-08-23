@@ -37,5 +37,15 @@ void pattern_reserve_all_patterns(Array* matrix) {
     utils_set_vertical_line(matrix, 7, 0, 6, true); 
     utils_set_vertical_line(matrix, 7, 13, 20, true); 
     utils_set_vertical_line(matrix, 13, 0, 6, true); 
+
+    // format information
+    utils_set_vertical_line(matrix, 8, 0, 8, true);
+    utils_set_vertical_line(matrix, 8, 13, 20, true);
+    utils_set_horizontal_line(matrix, 8, 0, 7, true);
+    utils_set_horizontal_line(matrix, 8, 13, 20, true);
+
+    // timing patterns
+    utils_set_horizontal_line(matrix, 6, 9, 12, true);
+    utils_set_vertical_line(matrix, 6, 8, 12, true);
 }
 

@@ -3,6 +3,8 @@
 #include <stdbool.h>
 #include <strings.h>
 
+#include "utils.h"
+
 #ifndef QRCODE_H
 #define QRCODE_H
 
@@ -13,11 +15,12 @@ typedef struct {
     bool* are_empty;
 } QRCode;
 
-
 QRCode* qrcode_init(size_t size, int version);
 void qrcode_free(QRCode* self);
 
 void qrcode_display(QRCode* self, FILE* stream);
 void qrcode_display_availability_mask(QRCode* self, FILE* stream);
+
+void qrcode_insert_information(QRCode* self, Array* information, size_t current_idx);
 
 #endif // QRCODE_H

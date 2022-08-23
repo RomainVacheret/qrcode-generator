@@ -1,3 +1,4 @@
+#include <stdio.h>
 
 #include "utils.h"
 
@@ -41,6 +42,7 @@ void utils_set_horizontal_line(
 }
 
 size_t utils_get_next_idx(size_t current_idx, size_t matrix_size) {
+    printf("utils_get_next_idx - %zu\n", current_idx);
     if(!current_idx) {
         fprintf(stderr, "ERROR: invalid index (0)");
         exit(1);
@@ -55,11 +57,14 @@ size_t utils_get_next_idx(size_t current_idx, size_t matrix_size) {
 
 size_t utils_get_next_available_idx(size_t current_idx, Array* matrix) {
     size_t next_idx;
-    int is_available;
+    int is_available = matrix->values[current_idx] == false;
 
     do {
-        next_idx = utils_get_next_idx(current_idx, matrix->size);
+        next_idx = is_available? current_idx : 
+            utils_get_next_idx(current_idx, matrix->size);
+        printf("utils_get_next - %zu\n", next_idx);
         is_available = matrix->values[next_idx] == false;
+        current_idx = next_idx;
     } while(!is_available);
 
     return next_idx;
