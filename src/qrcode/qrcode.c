@@ -51,7 +51,7 @@ void qrcode_display_availability_mask(QRCode* self, FILE* stream) {
 }
 
 void qrcode_insert_information(QRCode* self, Array* information, size_t current_idx) {
-    Array matrix = {self->matrix, self->size};
+    Array matrix = {self->matrix, self->size, self->size};
 
     // TODO improve performance: at the moment need to go through all 
     // cells each time

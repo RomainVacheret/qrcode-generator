@@ -7,7 +7,8 @@
 
 typedef struct {
     bool* values;
-    size_t size;
+    size_t capacity;
+    size_t size; // current size
 } Array;
 
 void utils_set_square_ring(
@@ -33,4 +34,17 @@ void utils_set_horizontal_line(
 
 size_t utils_get_next_idx(size_t current_idx, size_t matrix_size);
 size_t utils_get_next_available_idx(size_t current_idx, Array* matrix);
+
+
+Array* utils_alloc_array(size_t size);
+Array* utils_alloc_array_zeros(size_t size);
+void utils_free_array(Array* self);
+
+Array* utils_concat_arrays(Array* arr1, Array* arr2);
+Array* utils_append_arrays(Array* self, Array* other);
+Array* utils_append_arrays_full(Array* self, Array* other);
+
+void utils_display_array(Array* self);
+void utils_display_array_full(Array* self);
+
 #endif // UTILS_H
