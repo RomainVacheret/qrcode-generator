@@ -2,64 +2,67 @@
 #include <stdbool.h>
 
 #include "information.h"
+#include "utils.h"
 
-bool* information_get_error_correction_level(ErrorCorrectionLevel level) {
-    bool* information = (bool*) malloc(sizeof(bool) * 2);
+Array* information_get_error_correction_level(ErrorCorrectionLevel level) {
+    Array* information = utils_alloc_array(2);
+    information->size = 2;
 
     switch(level) {
         case L: 
-            information[0] = false;
-            information[1] = true;
+            information->values[0] = false;
+            information->values[1] = true;
             break;
         case M:
-            information[0] = false;
-            information[1] = false;
+            information->values[0] = false;
+            information->values[1] = false;
             break;
         case Q:
-            information[0] = true;
-            information[1] = true;
+            information->values[0] = true;
+            information->values[1] = true;
                 break;
         case H:
-            information[0] = true;
-            information[1] = false;
+            information->values[0] = true;
+            information->values[1] = false;
     }
 
     return information;
 }
 
-bool* information_get_encoding_mode(EncodingMode mode) {
-    bool* information = (bool*) malloc(sizeof(bool) * 4);
+Array* information_get_encoding_mode(EncodingMode mode) {
+    Array* information = utils_alloc_array(4);
+    information->size = 4;
 
     switch(mode) {
         case NUMERIC:
-            information[0] = 0;
-            information[1] = 0;
-            information[2] = 0;
-            information[3] = 1;
+            information->values[0] = 0;
+            information->values[1] = 0;
+            information->values[2] = 0;
+            information->values[3] = 1;
             break;
         case ALPHANUMERIC:
-            information[0] = 0;
-            information[1] = 0;
-            information[2] = 1;
-            information[3] = 0;
+            information->values[0] = 0;
+            information->values[1] = 0;
+            information->values[2] = 1;
+            information->values[3] = 0;
             break;
         case BYTE:
-            information[0] = 0;
-            information[1] = 1;
-            information[2] = 0;
-            information[3] = 0;
+            information->values[0] = 0;
+            information->values[1] = 1;
+            information->values[2] = 0;
+            information->values[3] = 0;
             break;
         case KANJI:
-            information[0] = 1;
-            information[1] = 0;
-            information[2] = 0;
-            information[3] = 0;
+            information->values[0] = 1;
+            information->values[1] = 0;
+            information->values[2] = 0;
+            information->values[3] = 0;
             break;
         case ECI:
-            information[0] = 0;
-            information[1] = 1;
-            information[2] = 1;
-            information[3] = 1;
+            information->values[0] = 0;
+            information->values[1] = 1;
+            information->values[2] = 1;
+            information->values[3] = 1;
     }
     
     return information;

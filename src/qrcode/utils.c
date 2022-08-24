@@ -130,12 +130,12 @@ Array* utils_append_arrays_full(Array* self, Array* other) {
     return self;
 }
 
-// Array* utils_append_array(Array* self, bool value) {
-//     assert(self->size < self->capacity);
-//     self->values[self->size++] = value;
-//
-//     return self;
-// }
+Array* utils_append_array(Array* self, bool value) {
+    assert(self->size < self->capacity);
+    self->values[self->size++] = value;
+
+    return self;
+}
 
 void utils_display_array(Array* self) {
     printf("Array capacity: %zu | size: %zu\n\n[", self->capacity, self->size);

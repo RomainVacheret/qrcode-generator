@@ -1,11 +1,14 @@
 #include <stdio.h>
 #include <string.h>
+#include <assert.h>
 
 #include "utils.h"
 #include "encoding.h"
+#include "information.h"
 
 static const char* ALPHANUMERIC_CHARS = "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ $%*+-./:";
 
+// TODO: warning when out of bound
 Array* encoding_encode_int_to_binary(int value, size_t bit_count) {
     Array* array = utils_alloc_array_zeros(bit_count);
     size_t idx = array->capacity - array->size - 1;
@@ -33,13 +36,8 @@ static int encoding_encode_alphanumeric_pair(char char1, char char2) {
     printf("alpha_pair `%c` `%c` %d\n", char1, char2, char2 == '\0');
     int first_char_encoding = encoding_get_alphanumeric_value(char1);
 
-    // return char2 == '\0' ? first_char_encoding 
-    //     : first_char_encoding * 45 + encoding_get_alphanumeric_value(char2);
-    //
-    int x = char2 == '\0' ? first_char_encoding 
+    return char2 == '\0' ? first_char_encoding 
         : first_char_encoding * 45 + encoding_get_alphanumeric_value(char2);
-    printf("X: %d\n", x);
-    return x;
 }
 
 int* encoding_alphanumeric_values(char* string, size_t length) {
@@ -89,3 +87,56 @@ Array* encoding_encode_alphanumeric_string(char* string) {
     return result;
 }
 
+static Array* encoding_add_terminator(Array* self) {
+    int maximum = 4;
+
+    while(maximum-- && self->size < self->capacity) {
+        utils_append_array(self, false);
+    }
+
+    return self;
+}
+
+static Array* encoding_pad_to_eight_bits(Array* self) {
+    while(self->size % 8) {
+        utils_append_array(self, false);
+    }
+
+    return self;
+}
+
+static Array* encoding_add_final_padding(Array* self) {
+    Array pad_bytes[2] = {{
+        (bool[8]) {true, true, true, false, true, true, false, false}, // 236
+        8,
+        8
+    }, {
+        (bool[8]) {false, false, false, true, false, false, false, true}, // 17
+        8,
+        8
+    }};
+    int step_count = 0;
+
+    while(self->size < self->capacity) {
+        int idx = step_count++ % 2;
+        Array x = pad_bytes[idx];
+        utils_append_arrays_full(self, &x);
+    }
+
+    return self;
+}
+
+// Note: the array must already be the size of the final message
+Array* encoding_pad_codewords(Array* self) {
+    encoding_add_terminator(self);
+    encoding_pad_to_eight_bits(self);
+    return encoding_add_final_padding(self);
+}
+
+// TODO: complete later
+size_t encoding_get_number_codewords(int version, EncodingMode mode) {
+    assert(version == 1 && mode == ALPHANUMERIC);
+    // TODO: set back to 16 after tests
+    // return 16;
+    return 13;
+}

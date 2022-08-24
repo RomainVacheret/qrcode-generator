@@ -43,6 +43,7 @@ void utils_free_array(Array* self);
 Array* utils_concat_arrays(Array* arr1, Array* arr2);
 Array* utils_append_arrays(Array* self, Array* other);
 Array* utils_append_arrays_full(Array* self, Array* other);
+Array* utils_append_array(Array* self, bool value);
 
 void utils_display_array(Array* self);
 void utils_display_array_full(Array* self);

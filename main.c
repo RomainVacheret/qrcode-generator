@@ -1,3 +1,6 @@
+#include <string.h>
+
+#include "src/qrcode/information.h"
 #include "src/qrcode/qrcode.h"
 #include "src/qrcode/pattern.h"
 #include "src/qrcode/utils.h"
@@ -30,11 +33,22 @@ int main() {
     utils_display_array(a);
 
     char* alph_string = "HELLO WORLD";
-    // int* int_vals = encoding_alphanumeric_values(alph_string, 2);
-    // printf("%d", int_vals[0]);
+    EncodingMode mode = ALPHANUMERIC;
+    size_t message_length = strlen(alph_string);
+    size_t codewords_count = encoding_get_number_codewords(VERSION, mode);
+    Array* binary_encoding_mode = information_get_encoding_mode(mode);
+    Array* binary_count_indicator = encoding_encode_int_to_binary(message_length, 9);
+    Array* result = utils_alloc_array(codewords_count * 8);
     Array* alph_encoding = encoding_encode_alphanumeric_string(alph_string);
-    utils_display_array(alph_encoding);
 
+    utils_append_arrays(result, binary_encoding_mode);
+    utils_append_arrays(result, binary_count_indicator);
+    utils_append_arrays(result, alph_encoding);
+    encoding_pad_codewords(result);
+
+    utils_display_array(result);
+
+    // I know, I should free all the allocated memory
     return EXIT_SUCCESS;
 }
 
