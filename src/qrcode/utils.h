@@ -38,8 +38,10 @@ size_t utils_get_next_available_idx(size_t current_idx, Array* matrix);
 
 Array* utils_alloc_array(size_t size);
 Array* utils_alloc_array_zeros(size_t size);
+Array* utils_alloc_array_values(size_t size, bool* values);
 void utils_free_array(Array* self);
 
+Array* utils_concat_arrays_size(Array* arr1, Array* arr2);
 Array* utils_concat_arrays(Array* arr1, Array* arr2);
 Array* utils_append_arrays(Array* self, Array* other);
 Array* utils_append_arrays_full(Array* self, Array* other);

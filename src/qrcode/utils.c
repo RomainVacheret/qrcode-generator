@@ -89,13 +89,39 @@ Array* utils_alloc_array_zeros(size_t size) {
     return array;
 }
 
+Array* utils_alloc_array_values(size_t size, bool* values) {
+    Array* array = utils_alloc_array(size);
+    for(size_t i = 0; i < size; i++) {
+        array->values[i] = values[i];
+    }
+
+    return array;
+}
+
 void utils_free_array(Array* self) {
     free(self->values);
     free(self);
 }
 
+// TODO: refactor
+Array* utils_concat_arrays_size(Array* arr1, Array* arr2) {
+    Array* new_array = utils_alloc_array(arr1->capacity + arr2->capacity);
+    new_array->size = arr1->size + arr2->size;
+
+    for(size_t i = 0; i < arr1->size; i++) {
+        new_array->values[i] = arr1->values[i];
+    }
+
+    for (size_t i = 0; i < arr2->size; i++) {
+        new_array->values[i + arr1->size] = arr2->values[i];
+    }
+
+    return new_array;
+}
+
 Array* utils_concat_arrays(Array* arr1, Array* arr2) {
     Array* new_array = utils_alloc_array(arr1->capacity + arr2->capacity);
+    new_array->size = arr1->capacity + arr2->capacity;
 
     for(size_t i = 0; i < arr1->capacity; i++) {
         new_array->values[i] = arr1->values[i];
