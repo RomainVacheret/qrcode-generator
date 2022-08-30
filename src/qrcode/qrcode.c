@@ -62,3 +62,26 @@ void qrcode_insert_information(QRCode* self, Array* information, size_t current_
         printf("qrcode_insert_information - %zu, %zu, %d, %d\n", i, current_idx, self->matrix[current_idx], self->are_empty[current_idx]);
     }
 }
+
+void qrcode_insert_version_format(QRCode* self, Array* information) {
+    for(size_t i = 0; i < 7; i++) {
+        size_t h_idx = 7 * self->size + self->size - 7 + i;
+        size_t v_idx = 8 + (self->size - 7 + i) * self->size;
+
+        self->matrix[h_idx] = information->values[8 + i];
+        self->matrix[v_idx] = information->values[6 - i];
+    }
+    
+    for(size_t i = 0; i < 6; i++) {
+        size_t h_idx = 7 * self->size + i;
+        size_t v_idx = 8 + i * self->size;
+
+        self->matrix[h_idx] = information->values[i];
+        self->matrix[v_idx] = information->values[information->size - 1 - i];
+    }
+
+    self->matrix[7 * self->size + 7] = information->values[6];
+    self->matrix[7 * self->size + 8] = information->values[7];
+    self->matrix[6 * self->size + 8] = information->values[8];
+    self->matrix[7 * self->size + self->size - 7 - 1] = information->values[7];
+}

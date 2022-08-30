@@ -17,6 +17,10 @@ int main() {
     // size_t result = utils_get_next_idx(before, WIDTH_SIZE);
     bool booleans[] = {true, true,};
     Array information = {booleans, 2, 2};
+    Array* format_version = information_compute_format(
+        information_get_error_correction_level(L),
+        utils_alloc_array_values(3, (bool[3]) {true, false, false})
+    );
 
     // qrcode->matrix[before] = '4';
     // qrcode->matrix[result] = '5';
@@ -25,6 +29,9 @@ int main() {
     pattern_reserve_all_patterns(&mask_matrix);
 
     qrcode_insert_information(qrcode, &information, WIDTH_SIZE * WIDTH_SIZE - 1);
+    qrcode_insert_version_format(qrcode, format_version);
+    
+
 
     qrcode_display(qrcode, stdout);
     qrcode_display_availability_mask(qrcode, stdout);
@@ -47,6 +54,24 @@ int main() {
     encoding_pad_codewords(result);
 
     utils_display_array(result);
+    printf("-----\n");
+
+    // Array* info = utils_concat_arrays(
+    //
+    //     information_get_error_correction_level(L),
+    //     utils_alloc_array_values(3, (bool[3]) {true, false, false})
+    // );
+    // Array* x = information_generate_format_information(info);
+    // utils_display_array(x);
+    //
+    // information_remove_leading_zeros(x);
+    // utils_display_array(x);
+    //
+    // information_devide_full(x);
+    // information_xor_format_information(x);
+
+
+    utils_display_array(format_version);
 
     // I know, I should free all the allocated memory
     return EXIT_SUCCESS;

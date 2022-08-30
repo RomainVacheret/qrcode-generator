@@ -22,5 +22,6 @@ void qrcode_display(QRCode* self, FILE* stream);
 void qrcode_display_availability_mask(QRCode* self, FILE* stream);
 
 void qrcode_insert_information(QRCode* self, Array* information, size_t current_idx);
+void qrcode_insert_version_format(QRCode* self, Array* information);
 
 #endif // QRCODE_H

@@ -31,6 +31,19 @@ void utils_set_vertical_line(
         }
 }
 
+void utils_set_vertical_line_values(
+    Array* matrix,
+    Array* empty,
+    size_t column,
+    size_t start_row, 
+    size_t end_row, 
+    bool* values) {
+        for(size_t i = 0; i < end_row - start_row + 1; i++) {
+            matrix->values[column + (start_row + i) * matrix->capacity] = values[i];
+            empty->values[column + (start_row + i) * matrix->capacity] = true;
+        }
+}
+
 void utils_set_horizontal_line(
     Array* matrix,
     size_t row, 
@@ -39,6 +52,19 @@ void utils_set_horizontal_line(
     bool value) {
         for(size_t i = 0; i < end_column - start_column + 1; i++) {
             matrix->values[row * matrix->capacity + start_column + i] = value;
+        }
+}
+
+void utils_set_horizontal_line_values(
+    Array* matrix,
+    Array* empty,
+    size_t row, 
+    size_t start_column,
+    size_t end_column,
+    bool* values) {
+        for(size_t i = 0; i < end_column - start_column + 1; i++) {
+            matrix->values[row * matrix->capacity + start_column + i] = values[i];
+            matrix->values[row * matrix->capacity + start_column + i] = true;
         }
 }
 
@@ -105,7 +131,7 @@ void utils_free_array(Array* self) {
 
 // TODO: refactor
 Array* utils_concat_arrays_size(Array* arr1, Array* arr2) {
-    Array* new_array = utils_alloc_array(arr1->capacity + arr2->capacity);
+    Array* new_array = utils_alloc_array(arr1->size + arr2->size);
     new_array->size = arr1->size + arr2->size;
 
     for(size_t i = 0; i < arr1->size; i++) {
