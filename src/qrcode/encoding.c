@@ -138,5 +138,5 @@ size_t encoding_get_number_codewords(int version, EncodingMode mode) {
     assert(version == 1 && mode == ALPHANUMERIC);
     // TODO: set back to 16 after tests
     // return 16;
-    return 13;
+    return 16;
 }

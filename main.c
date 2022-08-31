@@ -5,6 +5,8 @@
 #include "src/qrcode/pattern.h"
 #include "src/qrcode/utils.h"
 #include "src/qrcode/encoding.h"
+#include "src/qrcode/log_antilog.h"
+#include "src/qrcode/polynomial.h"
 
 #define WIDTH_SIZE 21
 #define VERSION 1
@@ -72,6 +74,14 @@ int main() {
 
 
     utils_display_array(format_version);
+    //
+    Polynomial* generator = polynomial_get_1M_generator();
+    generator->added_degree = 5;
+
+    polynomial_display(generator);
+    polynomial_convert(generator);
+    polynomial_display(generator);
+
 
     // I know, I should free all the allocated memory
     return EXIT_SUCCESS;
