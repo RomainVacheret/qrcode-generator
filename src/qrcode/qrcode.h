@@ -12,7 +12,7 @@ typedef struct {
     int version;
     size_t size;
     bool* matrix;
-    bool* are_empty;
+    bool* are_taken;
 } QRCode;
 
 QRCode* qrcode_init(size_t size, int version);

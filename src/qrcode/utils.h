@@ -27,7 +27,6 @@ void utils_set_vertical_line(
 
 void utils_set_vertical_line_values(
     Array* matrix,
-    Array* empty,
     size_t column,
     size_t start_row, 
     size_t end_row, 
@@ -42,7 +41,6 @@ void utils_set_horizontal_line(
 
 void utils_set_horizontal_line_values(
     Array* matrix,
-    Array* empty,
     size_t row, 
     size_t start_column,
     size_t end_column,

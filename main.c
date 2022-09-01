@@ -11,26 +11,61 @@
 #define WIDTH_SIZE 21
 #define VERSION 1
 
+int c = 0;
+size_t get_next_idx(size_t current_idx, size_t matrix_size) {
+    // printf("utils_get_next_idx - %zu\n", current_idx);
+    size_t x;
+    c++;
+
+    if(!current_idx) {
+        fprintf(stderr, "ERROR: invalid index (0)");
+        exit(1);
+    } else if((current_idx % 21) % 2 != (current_idx % 21) < 9){
+        x = current_idx < matrix_size ? 
+            matrix_size * matrix_size - (matrix_size - (current_idx - 1)) : 
+            current_idx - matrix_size + 1;
+    } else {
+            x = current_idx - 1;
+    }
+
+
+    printf("%zu ", x);
+    return x;
+}
+
+int main2() {
+    size_t x = 21 * 21 - 1;
+    // size_t x = 190;
+    while(c < 61) {
+         x = get_next_idx(x, 21);
+
+        if(!x) {
+            break;
+        }
+    }
+
+    return 0;
+}
+
 int main() {
     QRCode* qrcode = qrcode_init(WIDTH_SIZE, VERSION);
     Array value_matrix = {qrcode->matrix, WIDTH_SIZE, WIDTH_SIZE};
-    Array mask_matrix = {qrcode->are_empty, WIDTH_SIZE, WIDTH_SIZE};
+    Array mask_matrix = {qrcode->are_taken, WIDTH_SIZE, WIDTH_SIZE};
     // size_t before = 439;
     // size_t result = utils_get_next_idx(before, WIDTH_SIZE);
     bool booleans[] = {true, true,};
     Array information = {booleans, 2, 2};
     Array* format_version = information_compute_format(
         information_get_error_correction_level(L),
-        utils_alloc_array_values(3, (bool[3]) {true, false, false})
+        utils_alloc_array_values(3, (bool[3]) {false, true, false})
     );
 
     // qrcode->matrix[before] = '4';
     // qrcode->matrix[result] = '5';
 
-    pattern_set_all_finders(&value_matrix);
     pattern_reserve_all_patterns(&mask_matrix);
 
-    qrcode_insert_information(qrcode, &information, WIDTH_SIZE * WIDTH_SIZE - 1);
+    // qrcode_insert_information(qrcode, &information, WIDTH_SIZE * WIDTH_SIZE - 1);
     qrcode_insert_version_format(qrcode, format_version);
     
 
@@ -112,6 +147,48 @@ int main() {
     polynomial_devide2(poly);
 
     // I know, I should free all the allocated memory
+    qrcode_display(qrcode, stdout);
+
+    // --------------------
+
+    // Array correction = poly->values;
+    Array* final_array = utils_alloc_array(result->size + 8 * poly->degree);
+    utils_append_arrays(final_array, result);
+
+    for(size_t i = 0; i < poly->degree; i++) {
+        Array* int_to_bin = encoding_encode_int_to_binary(poly->values[i], 8);
+        utils_append_arrays(final_array, int_to_bin);
+        utils_free_array(int_to_bin);
+    }
+
+    printf("FINAL FINAL FINAL\n");
+    utils_display_array(final_array);
+
+    qrcode_display_availability_mask(qrcode, stdout);
+    printf("%zu\n", final_array->size);
+
+    // return 0;
+
+    qrcode_insert_information(qrcode, final_array, WIDTH_SIZE * WIDTH_SIZE - 1);
+
+
+    // masking
+
+    for(size_t i = 0; i < qrcode->size * qrcode->size; i++) {
+        qrcode->matrix[i] ^= ((i % 21) % 3 == 0);
+    }
+
+    pattern_set_all_finders(&value_matrix);
+    pattern_set_timings_n_dark(&value_matrix);
+
+    qrcode_display(qrcode, stdout);
+    qrcode_display_availability_mask(qrcode, stdout);
+    FILE* file = fopen("result.txt", "w");
+
+    qrcode_display(qrcode, file);
+    fclose(file);
+
+    //TODO: close the log-antilog file
     return EXIT_SUCCESS;
 }
 

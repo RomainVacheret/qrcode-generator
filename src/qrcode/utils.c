@@ -33,14 +33,12 @@ void utils_set_vertical_line(
 
 void utils_set_vertical_line_values(
     Array* matrix,
-    Array* empty,
     size_t column,
     size_t start_row, 
     size_t end_row, 
     bool* values) {
         for(size_t i = 0; i < end_row - start_row + 1; i++) {
             matrix->values[column + (start_row + i) * matrix->capacity] = values[i];
-            empty->values[column + (start_row + i) * matrix->capacity] = true;
         }
 }
 
@@ -57,14 +55,13 @@ void utils_set_horizontal_line(
 
 void utils_set_horizontal_line_values(
     Array* matrix,
-    Array* empty,
     size_t row, 
     size_t start_column,
     size_t end_column,
     bool* values) {
         for(size_t i = 0; i < end_column - start_column + 1; i++) {
+            printf("--> %zu\n", row * matrix->capacity + start_column + i);
             matrix->values[row * matrix->capacity + start_column + i] = values[i];
-            matrix->values[row * matrix->capacity + start_column + i] = true;
         }
 }
 
@@ -73,7 +70,11 @@ size_t utils_get_next_idx(size_t current_idx, size_t matrix_size) {
     if(!current_idx) {
         fprintf(stderr, "ERROR: invalid index (0)");
         exit(1);
-    } else if(current_idx % 2) {
+    // Note: there is a column for which all the cells are already reserved 
+    // (vertical timing);
+    } else if((current_idx % 21) == 6) {
+        return 425;// 21 * 6 + 21 - 1;
+    } else if((current_idx % 21) % 2 != (current_idx % 21) < 7) {
         return current_idx < matrix_size ? 
             matrix_size * matrix_size - (matrix_size - (current_idx - 1)) : 
             current_idx - matrix_size + 1;
@@ -85,14 +86,16 @@ size_t utils_get_next_idx(size_t current_idx, size_t matrix_size) {
 size_t utils_get_next_available_idx(size_t current_idx, Array* matrix) {
     size_t next_idx;
     int is_available = matrix->values[current_idx] == false;
+    size_t debug = current_idx;
 
     do {
         next_idx = is_available? current_idx : 
             utils_get_next_idx(current_idx, matrix->capacity);
-        printf("utils_get_next - %zu\n", next_idx);
         is_available = matrix->values[next_idx] == false;
+        // printf("utils_get_next - %zu %d %d %zu\n", next_idx, is_available, !is_available, debug);
         current_idx = next_idx;
     } while(!is_available);
+    // exit(1);
 
     return next_idx;
 }
