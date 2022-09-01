@@ -76,12 +76,40 @@ int main() {
     utils_display_array(format_version);
     //
     Polynomial* generator = polynomial_get_1M_generator();
-    generator->added_degree = 5;
+    polynomal_mul_alpha(generator, 5);
+    // generator->added_degree = 5;
 
     polynomial_display(generator);
     polynomial_convert(generator);
     polynomial_display(generator);
+    polynomial_convert(generator);
+    polynomial_display(generator);
+    polynomial_pop(generator);
+    polynomial_display(generator);
 
+    Array* arr = utils_alloc_array(8);
+    arr->size = 8;
+
+    // for(size_t i = 0; i < 8; i++) {
+    //     arr->values[i] = resul[i];
+    // }
+
+    memcpy(arr->values, result->values + 16, 8);
+    utils_display_array(arr);
+
+    printf("DECODE %d %p %p\n", encoding_decode_binary_to_int(arr), arr->values, result);
+
+    Polynomial* poly = polynomial_create_from_info(result);
+    polynomial_display(poly);
+    // Polynomial* alpha = polynomial_convert_new(poly); 
+    // polynomial_display(alpha);
+
+    Polynomial* gen = polynomial_get_1M_generator();
+
+    // TODO: issue with the degree, we need 2 values
+    // - one with the minimum degree
+    // - one with the 
+    polynomial_devide2(poly);
 
     // I know, I should free all the allocated memory
     return EXIT_SUCCESS;

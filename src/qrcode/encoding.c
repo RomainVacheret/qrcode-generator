@@ -1,6 +1,7 @@
 #include <stdio.h>
 #include <string.h>
 #include <assert.h>
+#include <math.h>
 
 #include "utils.h"
 #include "encoding.h"
@@ -21,6 +22,15 @@ Array* encoding_encode_int_to_binary(int value, size_t bit_count) {
     }
 
     return array;
+}
+
+int encoding_decode_binary_to_int(Array* arr) {
+    int result = 0;
+    for(size_t i = 0; i < arr->size; i++) {
+        result += pow(2, i) * arr->values[arr->size - 1 - i];
+    }
+
+    return result;
 }
 
 int encoding_get_alphanumeric_value(char character) {

@@ -5,6 +5,7 @@
 #define ENCODING_H
 
 Array* encoding_encode_int_to_binary(int value, size_t bit_count);
+int encoding_decode_binary_to_int(Array* arr);
 Array* encoding_encode_alphanumeric_string(char* string);
 int* encoding_alphanumeric_values(char* string, size_t length);
 
