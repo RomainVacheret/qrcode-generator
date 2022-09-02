@@ -3,7 +3,7 @@ import sys
 import pygame 
 
 
-WINDOW_DIMENSIONS = (500, 500)
+WINDOW_DIMENSIONS = (600, 600)
 SIZE = 20
 WHITE = (255, 255, 255)
 BLACK = (0, 0, 0)
@@ -24,8 +24,8 @@ def display(surface, lines):
                 surface, 
                 [WHITE, BLACK][char == '#'], 
                 pygame.Rect(
-                    (column + 1) * SIZE, 
-                    (row + 1) * SIZE,
+                    (column + 4) * SIZE, 
+                    (row + 4) * SIZE,
                     SIZE,
                     SIZE
                 )
