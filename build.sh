@@ -3,6 +3,6 @@
 set -xe
 
 clang -Wall -Wextra -o main.out main.c \
-    src/qrcode/qrcode.c src/qrcode/pattern.c src/qrcode/utils.c \
-    src/qrcode/information.c src/qrcode/encoding.c \
-    src/qrcode/log_antilog.c src/qrcode/polynomial.c
+    src/qrcode.c src/pattern.c src/utils.c \
+    src/information.c src/encoding.c \
+    src/log_antilog.c src/polynomial.c
