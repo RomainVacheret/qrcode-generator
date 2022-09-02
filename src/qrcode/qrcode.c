@@ -79,6 +79,7 @@ void qrcode_insert_version_format(QRCode* self, Array* information) {
         size_t v_idx = 8 + (self->size - 7 + i) * self->size;
 
         self->matrix[h_idx] = information->values[8 + i];
+        // self->matrix[h_idx] = information->values[6 - i];
         self->matrix[v_idx] = information->values[6 - i];
     }
     
@@ -87,12 +88,15 @@ void qrcode_insert_version_format(QRCode* self, Array* information) {
         size_t v_idx = 8 + i * self->size;
 
         self->matrix[h_idx] = information->values[i];
+         // self->matrix[h_idx] = information->values[information->size - 1 - i];
         self->matrix[v_idx] = information->values[information->size - 1 - i];
     }
 
     self->matrix[8 * self->size + 7] = information->values[6];
+    // self->matrix[8 * self->size + 7] = information->values[8];
     self->matrix[8 * self->size + 8] = information->values[7];
     // TODO: This one is false? It covers the first timing
     self->matrix[7 * self->size + 8] = information->values[8];
+    // self->matrix[7 * self->size + 8] = information->values[6];
     self->matrix[8 * self->size + self->size - 7 - 1] = information->values[7];
 }

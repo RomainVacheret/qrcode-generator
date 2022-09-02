@@ -1,3 +1,4 @@
+#include <stdbool.h>
 #include <string.h>
 
 #include "src/qrcode/information.h"
@@ -84,7 +85,6 @@ int main() {
     pattern_reserve_all_patterns(&mask_matrix);
 
     // qrcode_insert_information(qrcode, &information, WIDTH_SIZE * WIDTH_SIZE - 1);
-    qrcode_insert_version_format(qrcode, format_version);
     
 
 
@@ -196,6 +196,7 @@ int main() {
         qrcode->matrix[i] ^= ((i % 21) % 3 == 0);
     }
 
+    qrcode_insert_version_format(qrcode, format_version);
     pattern_set_all_finders(&value_matrix);
     pattern_set_timings_n_dark(&value_matrix);
 
@@ -213,6 +214,14 @@ int main() {
         test->matrix[i] ^= ((i % 21) % 3 == 0);
     }
     qrcode_display(test, stdout);
+
+    Array* format_version2 = information_compute_format(
+        information_get_error_correction_level(L),
+        utils_alloc_array_values(3, (bool[3]) {true, false, false})
+    );
+
+    utils_display_array(format_version);
+    utils_display_array(format_version2);
 
     return EXIT_SUCCESS;
 }
