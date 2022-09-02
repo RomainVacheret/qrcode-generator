@@ -13,7 +13,7 @@ def read_file():
     with open('result.txt', 'r') as file:
         return [
             (''.join(char) for idx, char in enumerate(line.replace('\n', '')) \
-                if not(idx % 2)) for line in file.readlines()[5:]
+                if not(idx % 2)) for line in file.readlines()[2:]
         ]
 
 
@@ -23,7 +23,12 @@ def display(surface, lines):
             pygame.draw.rect(
                 surface, 
                 [WHITE, BLACK][char == '#'], 
-                pygame.Rect((column + 1) * SIZE, (row + 1) * SIZE, SIZE, SIZE)
+                pygame.Rect(
+                    (column + 1) * SIZE, 
+                    (row + 1) * SIZE,
+                    SIZE,
+                    SIZE
+                )
             )
 
 

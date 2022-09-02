@@ -64,23 +64,59 @@ void utils_set_horizontal_line_values(
             matrix->values[row * matrix->capacity + start_column + i] = values[i];
         }
 }
+//
+//
+// size_t utils_get_next_idx(size_t current_idx, size_t matrix_size) {
+//     printf("utils_get_next_idx - %zu\n", current_idx);
+//     if(!current_idx) {
+//         fprintf(stderr, "ERROR: invalid index (0)");
+//         exit(1);
+//     // Note: there is a column for which all the cells are already reserved 
+//     // (vertical timing);
+//     } else if((current_idx % 21) == 6) {
+//         return 425;// 21 * 6 + 21 - 1;
+//     } else if((current_idx % 21) % 2 != (current_idx % 21) < 7) {
+//         return current_idx < matrix_size ? 
+//             matrix_size * matrix_size - (matrix_size - (current_idx - 1)) : 
+//             current_idx - matrix_size + 1;
+//     } else {
+//             return current_idx - 1;
+//     }
+// }
 
 size_t utils_get_next_idx(size_t current_idx, size_t matrix_size) {
     printf("utils_get_next_idx - %zu\n", current_idx);
-    if(!current_idx) {
-        fprintf(stderr, "ERROR: invalid index (0)");
-        exit(1);
+    static bool down = true;
+    size_t x;
+    // if(!current_idx) {
+    //     fprintf(stderr, "ERROR: invalid index (0)");
+    //     exit(1);
     // Note: there is a column for which all the cells are already reserved 
     // (vertical timing);
-    } else if((current_idx % 21) == 6) {
-        return 425;// 21 * 6 + 21 - 1;
-    } else if((current_idx % 21) % 2 != (current_idx % 21) < 7) {
-        return current_idx < matrix_size ? 
-            matrix_size * matrix_size - (matrix_size - (current_idx - 1)) : 
-            current_idx - matrix_size + 1;
-    } else {
-            return current_idx - 1;
+    // }
+    if((current_idx % 21) == 6) {
+        x = 5;// 21 * 6 + 21 - 1;
+        // down = !down;
+        // printf("A");
+    } else if( ((((current_idx % 21) % 2 != (current_idx % 21) < 7)) && ((current_idx < 21 && down) || (current_idx > 419 && !down)))) {
+        x = current_idx - 1;
+        down = !down;
+        printf("B");
     }
+    else if((current_idx % 21) % 2 != (current_idx % 21) < 7){
+    // else if((current_idx % 21) % 2 ){
+        // x = current_idx < matrix_size ? 
+        //     matrix_size * matrix_size - (matrix_size - (current_idx - 1)) : 
+        //     current_idx - matrix_size + 1;
+        x = current_idx + 1 + (matrix_size * (down ? -1 : 1));
+        if(current_idx == 4) printf("§§%zu %d\n", (matrix_size), down);
+        printf("C");
+    } else {
+            x = current_idx - 1;
+        // printf("D");
+    }
+
+    return x;
 }
 
 size_t utils_get_next_available_idx(size_t current_idx, Array* matrix) {

@@ -15,20 +15,36 @@ int c = 0;
 size_t get_next_idx(size_t current_idx, size_t matrix_size) {
     // printf("utils_get_next_idx - %zu\n", current_idx);
     size_t x;
+    static bool down = true;
     c++;
 
     if(!current_idx) {
         fprintf(stderr, "ERROR: invalid index (0)");
         exit(1);
-    } else if((current_idx % 21) % 2 != (current_idx % 21) < 9){
-        x = current_idx < matrix_size ? 
-            matrix_size * matrix_size - (matrix_size - (current_idx - 1)) : 
-            current_idx - matrix_size + 1;
+    } else if((current_idx % 21) == 6) {
+        x = 5;// 21 * 6 + 21 - 1;
+        // down = !down;
+        // printf("A");
+    } else if( ((((current_idx % 21) % 2 != (current_idx % 21) < 7)) && ((current_idx < 21 && down) || (current_idx > 419 && !down)))) {
+        x = current_idx - 1;
+        down = !down;
+        printf("B");
+    }
+    else if((current_idx % 21) % 2 != (current_idx % 21) < 7){
+    // else if((current_idx % 21) % 2 ){
+        // x = current_idx < matrix_size ? 
+        //     matrix_size * matrix_size - (matrix_size - (current_idx - 1)) : 
+        //     current_idx - matrix_size + 1;
+        x = current_idx + 1 + (matrix_size * (down ? -1 : 1));
+        if(current_idx == 4) printf("§§%zu %d\n", (matrix_size), down);
+        printf("C");
     } else {
             x = current_idx - 1;
+        // printf("D");
     }
 
 
+    // printf("%zu: %zu ", current_idx, x);
     printf("%zu ", x);
     return x;
 }
@@ -36,8 +52,10 @@ size_t get_next_idx(size_t current_idx, size_t matrix_size) {
 int main2() {
     size_t x = 21 * 21 - 1;
     // size_t x = 190;
-    while(c < 61) {
+    while(c < 400) {
+    // while(x != 0) {
          x = get_next_idx(x, 21);
+        if(!((c + 1) % 42)) printf("\n");
 
         if(!x) {
             break;
@@ -56,7 +74,7 @@ int main() {
     bool booleans[] = {true, true,};
     Array information = {booleans, 2, 2};
     Array* format_version = information_compute_format(
-        information_get_error_correction_level(L),
+        information_get_error_correction_level(M),
         utils_alloc_array_values(3, (bool[3]) {false, true, false})
     );
 
@@ -189,6 +207,13 @@ int main() {
     fclose(file);
 
     //TODO: close the log-antilog file
+    QRCode* test = qrcode_init(21, 1);
+
+    for(size_t i = 0; i < test->size * test->size; i++) {
+        test->matrix[i] ^= ((i % 21) % 3 == 0);
+    }
+    qrcode_display(test, stdout);
+
     return EXIT_SUCCESS;
 }
 
