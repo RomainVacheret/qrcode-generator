@@ -10,7 +10,7 @@ typedef struct {
     size_t size;
 } LogAntilogTable;
 
-void lat_free_table(LogAntilogTable* self);
-LogAntilogTable* lat_initialize_table();
+LogAntilogTable* lat_initialize();
+void lat_free(LogAntilogTable* self);
 
 #endif // LOG_ANTILOG_H

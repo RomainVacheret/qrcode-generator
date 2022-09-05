@@ -78,16 +78,18 @@ size_t information_get_char_count(int version, EncodingMode mode) {
 }
 
 Array* information_generate_format_information(Array* format_info) {
-    // Array* concatenated_information =  utils_concat_arrays(error_code_level,mask_pattern_reference);
     
-    //TODO: memory leak
+    // TODO: memory leak
+    // WHY: segmentation fault if a variable is used 
+    // Array* array_of_zeros = array_alloc_zeros(15);
     Array* full_information = array_append(
-        array_alloc_zeros(15), 
+        array_alloc_zeros(15),
+        // array_of_zeros,
         format_info
     );
     full_information->size = 15;
 
-    // utils_free_array(format_info);
+    // array_free(array_of_zeros);
     return full_information;
 }
 
@@ -109,11 +111,7 @@ Array* information_xor_format_information(Array* format_information) {
         true, false, false, true, false
     });
 
-    // for(size_t i = 0; i < 15; i++) {
-    //     format_information->values[i] ^= mask_pattern->values[i];
-    // }
-
-    format_information = information_perform_xor(
+    information_perform_xor(
         format_information,
         mask_pattern
     );
@@ -160,8 +158,6 @@ Array* information_devide(Array* self) {
     information_perform_xor(self, polynomial);
     information_remove_leading_zeros(self);
     array_free(polynomial);
-    printf("division\n");
-    array_display(self);
 
     return self;
 }
@@ -171,6 +167,7 @@ Array* information_devide_full(Array* self) {
         information_devide(self);
     }
 
+    // In case the result is less than 10 bits long
     while(self->size < 10) {
         self->values[self->size++] = 0;
     }
@@ -184,22 +181,14 @@ Array* information_compute_format(Array* error_code_level, Array* mask_pattern_r
         error_code_level,
         mask_pattern_reference
     );
-    printf("%zu -- \n", concatenated_information->size);
     Array* correction = information_generate_format_information(concatenated_information);
 
     information_remove_leading_zeros(correction);
     information_devide_full(correction);
-    // information_xor_format_information(correction);
-
-    printf("conca, correct - %zu %zu\n", concatenated_information->size, correction->size);
-    array_display(correction);
 
     Array* result = array_concat(concatenated_information, correction);
-    printf("concat final\n");
-    array_display(result);
 
     information_xor_format_information(result);
-    
     array_free(concatenated_information);
     array_free(correction);
 

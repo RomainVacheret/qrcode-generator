@@ -60,19 +60,7 @@ Polynomial* polynomal_mul_alpha(Polynomial* self, int value) {
 }
 
 Polynomial* polynomial_convert(Polynomial* self) {
-    LogAntilogTable* table = lat_initialize_table();
-    int* selected_table = self->mode == DECIMAL ? table->log : table->antilog; // : table->log;
-    self->mode = (self->mode + 1) % 2;
-
-    for(size_t i = 0; i < table->size; i++) {
-        self->values[i] = selected_table[(self->values[i] + self->added_degree) % 255];
-    }
-    
-    return self;
-}
-
-Polynomial* polynomial_convert2(Polynomial* self) {
-    LogAntilogTable* table = lat_initialize_table();
+    LogAntilogTable* table = lat_initialize();
     int* selected_table = self->mode == DECIMAL ? table->log : table->antilog; // : table->log;
     self->mode = (self->mode + 1) % 2;
 
@@ -80,32 +68,30 @@ Polynomial* polynomial_convert2(Polynomial* self) {
         self->values[i] = selected_table[self->values[i]];
     }
     
+    lat_free(table);
     return self;
 }
 
 Polynomial* polynomial_pop(Polynomial* self) {
-    // if(self->degree > min) {
-    //     self->degree--;
-    // }
     self->degree--;
 
     for(size_t i = 0; i < self->degree; i++) {
         self->values[i] = self->values[i + 1];
     }
-    // self->degree = 0;
 
     return self;
 }
 
 Polynomial* polynomial_convert_new(Polynomial* self) {
-    LogAntilogTable* table = lat_initialize_table();
+    LogAntilogTable* table = lat_initialize();
     Polynomial* poly = polynomial_alloc(self->degree, (self->mode + 1) % 2);
-    int* selected_table = self->mode == DECIMAL ? table->log : table->antilog; // : table->log;
+    int* selected_table = self->mode == DECIMAL ? table->log : table->antilog;
 
     for(size_t i = 0; i < table->size; i++) {
         poly->values[i] = selected_table[(self->values[i] + self->added_degree) % 255];
     }
     
+    lat_free(table);
     return poly;
 }
 void polynomial_display(Polynomial* self) {
@@ -134,22 +120,14 @@ Polynomial* polynomial_create_from_info(Array* info) {
     return self;
 }
 
-// Polynomial* polynomial_xor(Polynomial* self, Polynomial* other) {
-//     assert(self->mode == DECIMAL && other->mode == DECIMAL);
-//     for(size_t i = 0; i < self->degree; i++) {
-//         printf("XOR %zu %d %d\n", i, self->values[i], i < other->degree ? other->values[i] : 0);
-//         self->values[i] ^= i < other->degree ? other->values[i] : 0;
-//     }
-//
-//     return self;
-// }
 
 Polynomial* polynomial_xor(Polynomial* self, Polynomial* other) {
     assert(self->mode == DECIMAL && other->mode == DECIMAL);
-    printf("MM %zu %zu\n", self->degree, other->degree);
-    for(size_t i = 0; i < (self->degree > other->degree ? self->degree : other->degree); i++) {
-        printf("XOR %zu %d %d\n", i, (i >= self->degree ? 0 : self->values[i]), i < other->degree ? other->values[i] : 0);
+    size_t max_degree = (self->degree > other->degree ? self->degree : other->degree);
+
+    for(size_t i = 0; i < max_degree; i++) {
         self->values[i] = 
+            // We need to handles the cases where both polynomial don't have the same degree
             (i >= self->degree ? 0 : self->values[i]) ^
             (i < other->degree ? other->values[i] : 0);
     }
@@ -161,58 +139,17 @@ Polynomial* polynomial_xor(Polynomial* self, Polynomial* other) {
 // Note: in our case we do seem to mind the exponent of the lead term,
 // we only have to do the operations on values of the same index
 // Note: a step per codewords,i.e. for 1-M: 10
-Polynomial* polynomial_devide(Polynomial* gen, Polynomial* poly) {
-    printf("Degrees: %zu %zu\n", gen->degree, poly->degree);
-    LogAntilogTable* table = lat_initialize_table();
-    int leading_alpha = poly->mode == ALPHA ? poly->values[0] : table->log[poly->values[0]];
-    Polynomial* last_xor = NULL;
-
-    polynomal_mul_alpha(gen, leading_alpha);
-    printf("%d GEN\n", leading_alpha);
-    polynomial_display(gen);
-    polynomial_convert2(gen);
-    polynomial_display(gen);
-
-
-    // if(poly->mode == DECIMAL) {
-    // polynomial_convert2(poly);
-    // }
-
-    polynomial_xor(poly, gen);
-
-    polynomial_display(poly);
-    polynomial_pop(poly);
-    polynomial_display(poly);
-
-    Polynomial* gen2 = polynomial_get_1M_generator();
-    int leading_alpha2 = poly->mode == ALPHA ? poly->values[0] : table->log[poly->values[0]];
-    polynomal_mul_alpha(gen2, leading_alpha2);
-    polynomial_display(gen2);
-    polynomial_convert2(gen2);
-    polynomial_display(gen2);
-
-    polynomial_xor(poly, gen2);
-
-    polynomial_display(poly);
-    polynomial_pop(poly);
-    polynomial_display(poly);
-
-
-
-    return NULL;
-
-}
-
-Polynomial* polynomial_devide2(Polynomial* poly) {
-    LogAntilogTable* table = lat_initialize_table();
+Polynomial* polynomial_devide(Polynomial* poly) {
+    LogAntilogTable* table = lat_initialize();
     size_t initial_degree = 16;
 
     while(initial_degree--) {
         Polynomial* gen = polynomial_get_1M_generator();
-        int leading_alpha = poly->mode == ALPHA ? poly->values[0] : table->log[poly->values[0]];
+        int leading_alpha = poly->mode == ALPHA ? poly->values[0] 
+            : table->log[poly->values[0]];
 
         polynomal_mul_alpha(gen, leading_alpha);
-        polynomial_convert2(gen);
+        polynomial_convert(gen);
         polynomial_xor(poly, gen);
         polynomial_pop(poly);
         // Note: allow the information polynomial to be XORed with the generator
@@ -234,6 +171,7 @@ Polynomial* polynomial_devide2(Polynomial* poly) {
     printf("FINAL\n");
     // Note: reduce the degree by one because we kept it for the XOR operations
     // TODO: same as previous TODO, change for cases that are not `HELLOW WORLD` with 1-M
+    lat_free(table);
     poly->degree--;
     polynomial_display(poly);
 

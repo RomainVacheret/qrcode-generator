@@ -15,7 +15,7 @@ typedef struct {
     bool* are_taken;
 } QRCode;
 
-QRCode* qrcode_init(size_t size, int version);
+QRCode* qrcode_alloc(size_t size, int version);
 void qrcode_free(QRCode* self);
 
 void qrcode_display(QRCode* self, FILE* stream);

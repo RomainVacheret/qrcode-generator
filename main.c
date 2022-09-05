@@ -17,12 +17,13 @@ int main() {
     char* alph_string = "HELLO WORLD";
     EncodingMode mode = ALPHANUMERIC;
     size_t codewords_count = encoding_get_number_codewords(VERSION, mode);
-    QRCode* qrcode = qrcode_init(WIDTH_SIZE, VERSION);
+    QRCode* qrcode = qrcode_alloc(WIDTH_SIZE, VERSION);
     Array value_matrix = {qrcode->matrix, WIDTH_SIZE, WIDTH_SIZE};
     Array mask_matrix = {qrcode->are_taken, WIDTH_SIZE, WIDTH_SIZE};
+    Array* mask_pattern = array_alloc_values(3, (bool[3]) {false, true, false});
     Array* format_version = information_compute_format(
         information_get_error_correction_level(M),
-        array_alloc_values(3, (bool[3]) {false, true, false})
+            mask_pattern
     );
 
     Array* binary_encoding_mode = information_get_encoding_mode(mode);
@@ -41,7 +42,7 @@ int main() {
     Polynomial* information_poly = polynomial_create_from_info(binary_information);
     Array* final_array = array_alloc(binary_information->size + 8 * information_poly->degree);
 
-    polynomial_devide2(information_poly);
+    polynomial_devide(information_poly);
     array_append(final_array, binary_information);
 
     // Note: add the binary encoded error corrections
@@ -72,7 +73,19 @@ int main() {
     qrcode_display(qrcode, file);
     fclose(file);
 
-    // TODO: close the log-antilog file
     // TODO: look for all the memory leaks (there are a lot)
+
+    array_free(binary_encoding_mode);
+    array_free(binary_count_indicator);
+    array_free(binary_information);
+    array_free(format_version);
+    array_free(alph_encoding);
+    array_free(mask_pattern);
+    array_free(final_array);
+
+    polynomial_free(information_poly);
+
+    qrcode_free(qrcode);
+
     return EXIT_SUCCESS;
 }

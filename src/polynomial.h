@@ -23,13 +23,11 @@ Polynomial* polynomial_alloc_values(size_t degree, int* values, NotationMode mod
 void polynomial_free(Polynomial* self);
 Polynomial* polynomial_get_1M_generator();
 Polynomial* polynomial_convert(Polynomial* self);
-Polynomial* polynomial_convert2(Polynomial* self);
 Polynomial* polynomial_pop(Polynomial* self);
 Polynomial* polynomial_convert_new(Polynomial* self);
 Polynomial* polynomal_mul_alpha(Polynomial* self, int value);
 void polynomial_display(Polynomial* self);
 Polynomial* polynomial_create_from_info(Array* info);
-Polynomial* polynomial_devide(Polynomial* gen, Polynomial* poly);
-Polynomial* polynomial_devide2(Polynomial* poly);
+Polynomial* polynomial_devide(Polynomial* poly);
 
 #endif // POLYNOMIAL_H

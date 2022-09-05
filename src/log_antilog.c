@@ -4,20 +4,20 @@
 #include "log_antilog.h"
 
 
-LogAntilogTable* lat_alloc_table() {
+static LogAntilogTable* lat_alloc() {
     LogAntilogTable* table = (LogAntilogTable*) malloc(sizeof(LogAntilogTable));
     table->size = 256;
 
     return table;
 }
 
-void lat_free_table(LogAntilogTable* self) {
+void lat_free(LogAntilogTable* self) {
     free(self);
 }
 
-LogAntilogTable* lat_initialize_table() {
+LogAntilogTable* lat_initialize() {
     FILE* file = fopen("log-antilog.csv", "r");
-    LogAntilogTable* table = lat_alloc_table();
+    LogAntilogTable* table = lat_alloc();
     int a, b, c, d;
 
     if(!file) {
@@ -30,13 +30,6 @@ LogAntilogTable* lat_initialize_table() {
         table->log[c] = d;
     }
     
+    fclose(file);
     return table;
 }
-
-
-
-
-// int main() {
-//     LogAntilogTable* table = lat_initialize_table();
-//     printf("%d %d %d %d", table->log[3], table->log[66], table->antilog[6], table->antilog[234]);
-// }

@@ -4,7 +4,7 @@
 #include "qrcode.h"
 #include "utils.h"
 
-QRCode* qrcode_init(size_t size, int version) {
+QRCode* qrcode_alloc(size_t size, int version) {
     QRCode* qrcode = (QRCode*) malloc(sizeof(QRCode));
 
     qrcode->matrix = (bool*) calloc(size * size, sizeof(bool));
