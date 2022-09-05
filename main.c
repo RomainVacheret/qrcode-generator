@@ -4,6 +4,7 @@
 #include "src/information.h"
 #include "src/qrcode.h"
 #include "src/pattern.h"
+#include "src/array.h"
 #include "src/utils.h"
 #include "src/encoding.h"
 #include "src/log_antilog.h"
@@ -21,32 +22,33 @@ int main() {
     Array mask_matrix = {qrcode->are_taken, WIDTH_SIZE, WIDTH_SIZE};
     Array* format_version = information_compute_format(
         information_get_error_correction_level(M),
-        utils_alloc_array_values(3, (bool[3]) {false, true, false})
+        array_alloc_values(3, (bool[3]) {false, true, false})
     );
+
     Array* binary_encoding_mode = information_get_encoding_mode(mode);
     Array* binary_count_indicator = encoding_encode_int_to_binary(strlen(alph_string), 9);
-    Array* binary_information = utils_alloc_array(codewords_count * 8);
+    Array* binary_information = array_alloc(codewords_count * 8);
     Array* alph_encoding = encoding_encode_alphanumeric_string(alph_string);
 
     pattern_reserve_all_patterns(&mask_matrix);
 
-    utils_append_arrays(binary_information, binary_encoding_mode);
-    utils_append_arrays(binary_information, binary_count_indicator);
-    utils_append_arrays(binary_information, alph_encoding);
+    array_append(binary_information, binary_encoding_mode);
+    array_append(binary_information, binary_count_indicator);
+    array_append(binary_information, alph_encoding);
     encoding_pad_codewords(binary_information);
 
     // Note: error correction step 
     Polynomial* information_poly = polynomial_create_from_info(binary_information);
-    Array* final_array = utils_alloc_array(binary_information->size + 8 * information_poly->degree);
+    Array* final_array = array_alloc(binary_information->size + 8 * information_poly->degree);
 
     polynomial_devide2(information_poly);
-    utils_append_arrays(final_array, binary_information);
+    array_append(final_array, binary_information);
 
     // Note: add the binary encoded error corrections
     for(size_t i = 0; i < information_poly->degree; i++) {
         Array* int_to_bin = encoding_encode_int_to_binary(information_poly->values[i], 8);
-        utils_append_arrays(final_array, int_to_bin);
-        utils_free_array(int_to_bin);
+        array_append(final_array, int_to_bin);
+        array_free(int_to_bin);
     }
 
     qrcode_insert_information(qrcode, final_array, WIDTH_SIZE * WIDTH_SIZE - 1);

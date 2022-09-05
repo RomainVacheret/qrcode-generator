@@ -11,7 +11,7 @@ static const char* ALPHANUMERIC_CHARS = "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ $%
 
 // TODO: warning when out of bound
 Array* encoding_encode_int_to_binary(int value, size_t bit_count) {
-    Array* array = utils_alloc_array_zeros(bit_count);
+    Array* array = array_alloc_zeros(bit_count);
     size_t idx = array->capacity - array->size - 1;
     array->size = bit_count;
 
@@ -71,7 +71,7 @@ Array* encoding_encode_alphanumeric_string(char* string) {
     size_t length = strlen(string);
     size_t pairs_length = length / 2 + length % 2;
     size_t binary_length = pairs_length * ALPHANUMERIC_BIT_LENGTH;
-    Array* result = utils_alloc_array(binary_length);
+    Array* result = array_alloc(binary_length);
     printf("LENGTH %zu\n", length);
     int* pairs_values = encoding_alphanumeric_values(string, length);
 
@@ -80,8 +80,8 @@ Array* encoding_encode_alphanumeric_string(char* string) {
             pairs_values[i],
             ALPHANUMERIC_BIT_LENGTH
         );
-        utils_append_arrays_full(result, binary_encoding);
-        utils_free_array(binary_encoding);
+        array_append_full(result, binary_encoding);
+        array_free(binary_encoding);
     }
     
     if(length % 2) {
@@ -89,9 +89,9 @@ Array* encoding_encode_alphanumeric_string(char* string) {
             pairs_values[pairs_length - 1],
             ALPHANUMERIC_ODD_BIT_LENGTH
         );
-        utils_display_array(binary_encoding);
-        utils_append_arrays_full(result, binary_encoding);
-        utils_free_array(binary_encoding);
+        array_display(binary_encoding);
+        array_append_full(result, binary_encoding);
+        array_free(binary_encoding);
     }
 
     return result;
@@ -101,7 +101,7 @@ static Array* encoding_add_terminator(Array* self) {
     int maximum = 4;
 
     while(maximum-- && self->size < self->capacity) {
-        utils_append_array(self, false);
+        array_append_value(self, false);
     }
 
     return self;
@@ -109,7 +109,7 @@ static Array* encoding_add_terminator(Array* self) {
 
 static Array* encoding_pad_to_eight_bits(Array* self) {
     while(self->size % 8) {
-        utils_append_array(self, false);
+        array_append_value(self, false);
     }
 
     return self;
@@ -130,7 +130,7 @@ static Array* encoding_add_final_padding(Array* self) {
     while(self->size < self->capacity) {
         int idx = step_count++ % 2;
         Array x = pad_bytes[idx];
-        utils_append_arrays_full(self, &x);
+        array_append_full(self, &x);
     }
 
     return self;

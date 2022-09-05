@@ -122,7 +122,7 @@ void polynomial_display(Polynomial* self) {
 Polynomial* polynomial_create_from_info(Array* info) {
     assert(!(info->size % 8));
     Polynomial* self = polynomial_alloc(info->size / 8, DECIMAL);
-    Array* arr = utils_alloc_array(8);
+    Array* arr = array_alloc(8);
     arr->size = 8;
 
     for(size_t i = 0; i < info->size; i += 8) {
@@ -130,7 +130,7 @@ Polynomial* polynomial_create_from_info(Array* info) {
         self->values[i / 8] = encoding_decode_binary_to_int(arr);
     }
 
-    utils_free_array(arr);
+    array_free(arr);
     return self;
 }
 

@@ -6,7 +6,7 @@
 
 // TODO: refactor with the new utils_alloc_array_values function
 Array* information_get_error_correction_level(ErrorCorrectionLevel level) {
-    Array* information = utils_alloc_array(2);
+    Array* information = array_alloc(2);
     information->size = 2;
 
     switch(level) {
@@ -31,7 +31,7 @@ Array* information_get_error_correction_level(ErrorCorrectionLevel level) {
 }
 
 Array* information_get_encoding_mode(EncodingMode mode) {
-    Array* information = utils_alloc_array(4);
+    Array* information = array_alloc(4);
     information->size = 4;
 
     switch(mode) {
@@ -81,8 +81,8 @@ Array* information_generate_format_information(Array* format_info) {
     // Array* concatenated_information =  utils_concat_arrays(error_code_level,mask_pattern_reference);
     
     //TODO: memory leak
-    Array* full_information = utils_append_arrays(
-        utils_alloc_array_zeros(15), 
+    Array* full_information = array_append(
+        array_alloc_zeros(15), 
         format_info
     );
     full_information->size = 15;
@@ -103,7 +103,7 @@ Array* information_perform_xor(Array* self, Array* other) {
 // TODO: why does it break when there is only one of the xor when only
 // one should be applied
 Array* information_xor_format_information(Array* format_information) {
-    Array* mask_pattern = utils_alloc_array_values(15, (bool[15]) {
+    Array* mask_pattern = array_alloc_values(15, (bool[15]) {
         true, false, true, false, true, 
         false, false, false, false, false,
         true, false, false, true, false
@@ -117,7 +117,7 @@ Array* information_xor_format_information(Array* format_information) {
         format_information,
         mask_pattern
     );
-    utils_free_array(mask_pattern);
+    array_free(mask_pattern);
 
     return format_information;
 }
@@ -127,7 +127,7 @@ Array* information_xor_format_information(Array* format_information) {
 // Note: the "normal" size of polynomial is 11, we add zeros to pad because it 
 // will needed later on
 Array* information_get_generator_polynomial() {
-    Array* result =  utils_alloc_array_values(15, (bool[15]) {
+    Array* result =  array_alloc_values(15, (bool[15]) {
         true, false, true, false, false,
         true, true, false, true, true,
         true, false, false, false, false
@@ -159,9 +159,9 @@ Array* information_devide(Array* self) {
 
     information_perform_xor(self, polynomial);
     information_remove_leading_zeros(self);
-    utils_free_array(polynomial);
+    array_free(polynomial);
     printf("division\n");
-    utils_display_array(self);
+    array_display(self);
 
     return self;
 }
@@ -180,7 +180,7 @@ Array* information_devide_full(Array* self) {
 
 
 Array* information_compute_format(Array* error_code_level, Array* mask_pattern_reference) {
-    Array* concatenated_information =  utils_concat_arrays(
+    Array* concatenated_information =  array_concat_full(
         error_code_level,
         mask_pattern_reference
     );
@@ -192,16 +192,16 @@ Array* information_compute_format(Array* error_code_level, Array* mask_pattern_r
     // information_xor_format_information(correction);
 
     printf("conca, correct - %zu %zu\n", concatenated_information->size, correction->size);
-    utils_display_array(correction);
+    array_display(correction);
 
-    Array* result = utils_concat_arrays_size(concatenated_information, correction);
+    Array* result = array_concat(concatenated_information, correction);
     printf("concat final\n");
-    utils_display_array(result);
+    array_display(result);
 
     information_xor_format_information(result);
     
-    utils_free_array(concatenated_information);
-    utils_free_array(correction);
+    array_free(concatenated_information);
+    array_free(correction);
 
     return result;
 }
