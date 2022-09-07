@@ -1,8 +1,8 @@
-#include <stdbool.h>
-#include <stdio.h>
+#include <assert.h>
 
 #include "qrcode.h"
-#include "utils.h"
+#include "pattern.h"
+#include "polynomial.h"
 
 QRCode* qrcode_alloc(size_t size, int version) {
     QRCode* qrcode = (QRCode*) malloc(sizeof(QRCode));
@@ -99,4 +99,95 @@ void qrcode_insert_version_format(QRCode* self, Array* information) {
     self->matrix[7 * self->size + 8] = information->values[8];
     // self->matrix[7 * self->size + 8] = information->values[6];
     self->matrix[8 * self->size + self->size - 7 - 1] = information->values[7];
+}
+
+// TODO: add other versions
+static size_t get_size_from_version(int version) {
+    assert(version == 1);
+    return 21;
+}
+
+static Array* process_information(
+    QRCode* qrcode, 
+    char* string, 
+    ErrorCorrectionLevel correction_mode,
+    EncodingMode encoding_mode, 
+    MaskPattern mask) {
+        size_t codewords_count = encoding_get_number_codewords(qrcode->version, encoding_mode);
+        Array* binary_encoding_mode = information_get_encoding_mode(encoding_mode);
+        // TODO: change length depending on the encoding mode
+        Array* binary_count_indicator = encoding_encode_int_to_binary(strlen(string), 9);
+        Array* binary_information = array_alloc(codewords_count * 8);
+        Array* alph_encoding = encoding_encode_alphanumeric_string(string);
+
+        array_append(binary_information, binary_encoding_mode);
+        array_append(binary_information, binary_count_indicator);
+        array_append(binary_information, alph_encoding);
+        encoding_pad_codewords(binary_information);
+
+        array_free(binary_encoding_mode);
+        array_free(binary_count_indicator);
+        array_free(alph_encoding);
+
+        return binary_information;
+}
+
+QRCode* qrcode_generate(
+    char* string, 
+    ErrorCorrectionLevel correction_mode,
+    EncodingMode encoding_mode, 
+    MaskPattern mask,
+    int version) {
+
+    QRCode* qrcode = qrcode_alloc(get_size_from_version(version), version);
+    Array value_matrix = {qrcode->matrix, qrcode->size, qrcode->size};
+    Array mask_matrix = {qrcode->are_taken, qrcode->size, qrcode->size};
+        Array* mask_pattern = mask_convert_to_binary(mask);
+    Array* format_version = information_compute_format(
+        information_get_error_correction_level(correction_mode),
+            mask_pattern
+    );
+    Array* binary_information = process_information(
+        qrcode, 
+        string, 
+        M, 
+        ALPHANUMERIC, 
+        MASK_2
+    );
+
+    pattern_reserve_all_patterns(&mask_matrix);
+
+
+    // Note: error correction step 
+    Polynomial* information_poly = polynomial_create_from_info(binary_information);
+    Array* final_array = array_alloc(binary_information->size + 8 * information_poly->degree);
+
+    polynomial_devide(information_poly);
+    array_append(final_array, binary_information);
+
+    // Note: add the binary encoded error corrections
+    for(size_t i = 0; i < information_poly->degree; i++) {
+        Array* int_to_bin = encoding_encode_int_to_binary(information_poly->values[i], 8);
+        array_append(final_array, int_to_bin);
+        array_free(int_to_bin);
+    }
+
+    qrcode_insert_information(qrcode, final_array, qrcode->size * qrcode->size - 1);
+
+    // Note: masking step
+    mask_apply_mask(&value_matrix, mask);
+
+    // Note: these must not be masked
+    qrcode_insert_version_format(qrcode, format_version);
+    pattern_set_all_finders(&value_matrix);
+    pattern_set_timings_n_dark(&value_matrix);
+
+    array_free(mask_pattern);
+    array_free(binary_information);
+    array_free(format_version);
+    array_free(final_array);
+
+    polynomial_free(information_poly);
+
+    return qrcode;
 }
