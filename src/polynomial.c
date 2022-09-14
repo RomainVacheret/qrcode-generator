@@ -64,7 +64,7 @@ Polynomial* polynomial_convert(Polynomial* self) {
     int* selected_table = self->mode == DECIMAL ? table->log : table->antilog; // : table->log;
     self->mode = (self->mode + 1) % 2;
 
-    for(size_t i = 0; i < table->size; i++) {
+    for(size_t i = 0; i < self->degree; i++) {
         self->values[i] = selected_table[self->values[i]];
     }
     
