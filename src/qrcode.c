@@ -145,14 +145,14 @@ QRCode* qrcode_generate(
         Array* mask_pattern = mask_convert_to_binary(mask);
     Array* format_version = information_compute_format(
         information_get_error_correction_level(correction_mode),
-            mask_pattern
+        mask_pattern
     );
     Array* binary_information = process_information(
         qrcode, 
         string, 
-        M, 
-        ALPHANUMERIC, 
-        MASK_2
+        correction_mode, 
+        encoding_mode, 
+        mask
     );
 
     pattern_reserve_all_patterns(&mask_matrix);
