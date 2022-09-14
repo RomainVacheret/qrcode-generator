@@ -18,7 +18,7 @@ static bool mask_compute_mask2(size_t idx, size_t qrcode_size) {
 }
 
 static bool mask_compute_mask3(size_t idx, size_t qrcode_size) {
-    return ((idx % qrcode_size) % 3 == 0);
+    return (((idx % qrcode_size) + (idx / qrcode_size)) % 3 == 0);
 }
 
 static bool mask_compute_mask4(size_t idx, size_t qrcode_size) {
