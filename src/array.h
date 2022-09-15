@@ -25,5 +25,7 @@ Array* array_append_value(Array* self, bool value);
 void array_free(Array* self);
 void array_display(Array* self);
 void array_display_full(Array* self);
+char* array_as_string(Array* self);
+Array* array_copy(Array* self);
 
 #endif // ARRAY_H

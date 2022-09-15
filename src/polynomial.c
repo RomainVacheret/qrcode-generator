@@ -7,6 +7,7 @@
 #include "utils.h"
 #include "polynomial.h"
 #include "log_antilog.h"
+#include "logger.h"
 
 
 Polynomial* polynomial_alloc(size_t degree, NotationMode mode) {
@@ -82,18 +83,6 @@ Polynomial* polynomial_pop(Polynomial* self) {
     return self;
 }
 
-Polynomial* polynomial_convert_new(Polynomial* self) {
-    LogAntilogTable* table = lat_initialize();
-    Polynomial* poly = polynomial_alloc(self->degree, (self->mode + 1) % 2);
-    int* selected_table = self->mode == DECIMAL ? table->log : table->antilog;
-
-    for(size_t i = 0; i < table->size; i++) {
-        poly->values[i] = selected_table[(self->values[i] + self->added_degree) % 255];
-    }
-    
-    lat_free(table);
-    return poly;
-}
 void polynomial_display(Polynomial* self) {
     printf("Poli - mode: %s, degree: %zu, added_degree: %zu\n", 
         ((char*[2]) {"DECIMAL", "ALPHA"})[self->mode],
@@ -161,7 +150,7 @@ Polynomial* polynomial_devide(Polynomial* poly) {
         }
         size_t tmp = poly->degree;
         poly->degree = 11;
-        polynomial_display(poly);
+        // polynomial_display(poly);
         poly->degree = tmp;
 
 
@@ -177,10 +166,3 @@ Polynomial* polynomial_devide(Polynomial* poly) {
 
     return poly;
 }
-
-
-// int main() {
-//     Polynomial* generator = polynomial_get_1M_generator();
-//     generator->added_degree = 5;
-//
-// }

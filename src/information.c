@@ -3,6 +3,7 @@
 
 #include "information.h"
 #include "utils.h"
+#include "logger.h"
 
 // TODO: refactor with the new utils_alloc_array_values function
 Array* information_get_error_correction_level(ErrorCorrectionLevel level) {
@@ -94,9 +95,32 @@ Array* information_generate_format_information(Array* format_info) {
 }
 
 Array* information_perform_xor(Array* self, Array* other) {
+	Array* self_copy = array_copy(self);
+
     for(size_t i = 0; i < 15; i++) {
         self->values[i] ^= other->values[i];
     }
+
+    // -- logging -- 
+    char* str = "";
+    char* self_str = array_as_string(self_copy);
+    char* other_str = array_as_string(other);
+    char* result_str = array_as_string(self);
+
+    asprintf(
+        &str, 
+        "information_perform_xor - self: %s, other: %s, result: %s",
+        self_str,
+        other_str,
+        result_str
+    );
+    logger_write(LOGGER, str, DEBUG);
+
+    array_free(self_copy);
+    free(str);
+    free(self_str);
+    free(other_str);
+    free(result_str);
 
     return self;
 }
@@ -137,6 +161,7 @@ Array* information_get_generator_polynomial() {
 
 Array* information_remove_leading_zeros(Array* self) {
     size_t idx = 0, zero_count = 0;
+    Array* self_copy = array_copy(self);
 
     while(!self->values[idx]){
         idx++;
@@ -144,9 +169,27 @@ Array* information_remove_leading_zeros(Array* self) {
     }
 
     for(size_t i = zero_count; i < self->size; i++) {
-       self->values[i - zero_count] = self->values[i]; 
+        self->values[i - zero_count] = self->values[i]; 
     }
     self->size -= zero_count;
+
+    // -- logging --
+    char* str;
+    char* self_str = array_as_string(self_copy);
+    char* result_str = array_as_string(self);
+
+    asprintf(
+        &str,
+        "information_remove_leading_zeros - self: %s, result: %s",
+        self_str,
+        result_str
+    );
+    logger_write(LOGGER, str, DEBUG);
+
+    array_free(self_copy);
+    free(str);
+    free(self_str);
+    free(result_str);
 
     return self;
 }
@@ -163,6 +206,8 @@ Array* information_devide(Array* self) {
 }
 
 Array* information_devide_full(Array* self) {
+    Array* self_copy = array_copy(self);
+
     while(self->size > 10) {
         information_devide(self);
     }
@@ -172,11 +217,30 @@ Array* information_devide_full(Array* self) {
         self->values[self->size++] = 0;
     }
 
+    // -- logging -- 
+    char* str;
+    char* self_str = array_as_string(self_copy);
+    char* result_str = array_as_string(self);
+
+    asprintf(
+        &str, 
+        "information_devide_full - self: %s, result: %s",
+        self_str,
+        result_str
+    );
+    logger_write(LOGGER, str, DEBUG);
+
+	array_free(self_copy);
+    free(str);
+    free(self_str);
+    free(result_str);
+
     return self;
 }
 
 
 Array* information_compute_format(Array* error_code_level, Array* mask_pattern_reference) {
+    char* str;
     Array* concatenated_information =  array_concat_full(
         error_code_level,
         mask_pattern_reference
@@ -192,5 +256,24 @@ Array* information_compute_format(Array* error_code_level, Array* mask_pattern_r
     array_free(concatenated_information);
     array_free(correction);
 
+    // -- logging --
+	char* error_str = array_as_string(error_code_level);
+    char* mask_str = array_as_string(mask_pattern_reference);
+    char* result_str = array_as_string(result);
+
+    asprintf(
+        &str, 
+        "information_compute_format - error: %s, mask: %s, result: %s",
+        error_str,
+        mask_str,
+        result_str
+    );
+    logger_write(LOGGER, str, DEBUG);
+    free(error_str);
+    free(mask_str);
+    free(result_str);
+    free(str);
+
+    // exit(1);
     return result;
 }

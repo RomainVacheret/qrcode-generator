@@ -43,7 +43,7 @@ int encoding_get_alphanumeric_value(char character) {
 }
 
 static int encoding_encode_alphanumeric_pair(char char1, char char2) {
-    printf("alpha_pair `%c` `%c` %d\n", char1, char2, char2 == '\0');
+    // printf("alpha_pair `%c` `%c` %d\n", char1, char2, char2 == '\0');
     int first_char_encoding = encoding_get_alphanumeric_value(char1);
 
     return char2 == '\0' ? first_char_encoding 
@@ -53,7 +53,7 @@ static int encoding_encode_alphanumeric_pair(char char1, char char2) {
 int* encoding_alphanumeric_values(char* string, size_t length) {
     size_t pairs_length = length / 2 + length % 2;
     int* result = (int*) malloc(sizeof(int) * pairs_length);
-    printf("-- `%s` %zu %zu \n", string, length, strlen(string));
+    // printf("-- `%s` %zu %zu \n", string, length, strlen(string));
 
     for(size_t i = 0; i < length; i += 2) {
         result[i / 2] = encoding_encode_alphanumeric_pair(

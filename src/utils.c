@@ -60,7 +60,7 @@ void utils_set_horizontal_line_values(
     size_t end_column,
     bool* values) {
         for(size_t i = 0; i < end_column - start_column + 1; i++) {
-            printf("--> %zu\n", row * matrix->capacity + start_column + i);
+            // printf("--> %zu\n", row * matrix->capacity + start_column + i);
             matrix->values[row * matrix->capacity + start_column + i] = values[i];
         }
 }
@@ -85,7 +85,7 @@ void utils_set_horizontal_line_values(
 // }
 
 size_t utils_get_next_idx(size_t current_idx, size_t matrix_size) {
-    printf("utils_get_next_idx - %zu\n", current_idx);
+    // printf("utils_get_next_idx - %zu\n", current_idx);
     static bool down = true;
     size_t x;
     // if(!current_idx) {
@@ -101,7 +101,7 @@ size_t utils_get_next_idx(size_t current_idx, size_t matrix_size) {
     } else if( ((((current_idx % 21) % 2 != (current_idx % 21) < 7)) && ((current_idx < 21 && down) || (current_idx > 419 && !down)))) {
         x = current_idx - 1;
         down = !down;
-        printf("B");
+        // printf("B");
     }
     else if((current_idx % 21) % 2 != (current_idx % 21) < 7){
     // else if((current_idx % 21) % 2 ){
@@ -109,8 +109,8 @@ size_t utils_get_next_idx(size_t current_idx, size_t matrix_size) {
         //     matrix_size * matrix_size - (matrix_size - (current_idx - 1)) : 
         //     current_idx - matrix_size + 1;
         x = current_idx + 1 + (matrix_size * (down ? -1 : 1));
-        if(current_idx == 4) printf("§§%zu %d\n", (matrix_size), down);
-        printf("C");
+        // if(current_idx == 4) printf("§§%zu %d\n", (matrix_size), down);
+        // printf("C");
     } else {
             x = current_idx - 1;
         // printf("D");
@@ -122,7 +122,6 @@ size_t utils_get_next_idx(size_t current_idx, size_t matrix_size) {
 size_t utils_get_next_available_idx(size_t current_idx, Array* matrix) {
     size_t next_idx;
     int is_available = matrix->values[current_idx] == false;
-    size_t debug = current_idx;
 
     do {
         next_idx = is_available? current_idx : 

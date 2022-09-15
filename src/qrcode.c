@@ -4,6 +4,8 @@
 #include "pattern.h"
 #include "polynomial.h"
 
+#include "logger.h"
+
 QRCode* qrcode_alloc(size_t size, int version) {
     QRCode* qrcode = (QRCode*) malloc(sizeof(QRCode));
 
@@ -52,12 +54,13 @@ void qrcode_display_availability_mask(QRCode* self, FILE* stream) {
 
 void qrcode_insert_information(QRCode* self, Array* information, size_t current_idx) {
     Array matrix = {self->are_taken, self->size, self->size};
+    char* str;
 
     // TODO improve performance: at the moment need to go through all 
     // cells each time
     for(size_t i = 0; i < information->size; i++) {
         current_idx = utils_get_next_available_idx(current_idx, &matrix);
-        printf("qrcode_insert_information - %zu, %zu, %d, %d %d\n", 
+        asprintf(&str, "qrcode_insert_information - %zu, %zu, %d, %d %d", 
             i, 
             current_idx, 
             self->matrix[current_idx],
@@ -67,9 +70,8 @@ void qrcode_insert_information(QRCode* self, Array* information, size_t current_
         self->matrix[current_idx] = information->values[i];
         self->are_taken[current_idx] = true;
 
-        // qrcode_display(self, stdout);
-        printf("%zu\n", i);
-        qrcode_display_availability_mask(self, stdout);
+        logger_write(LOGGER, str, DEBUG);
+        free(str);
     }
 }
 
@@ -110,9 +112,7 @@ static size_t get_size_from_version(int version) {
 static Array* process_information(
     QRCode* qrcode, 
     char* string, 
-    ErrorCorrectionLevel correction_mode,
-    EncodingMode encoding_mode, 
-    MaskPattern mask) {
+    EncodingMode encoding_mode) {
         size_t codewords_count = encoding_get_number_codewords(qrcode->version, encoding_mode);
         Array* binary_encoding_mode = information_get_encoding_mode(encoding_mode);
         // TODO: change length depending on the encoding mode
@@ -150,9 +150,7 @@ QRCode* qrcode_generate(
     Array* binary_information = process_information(
         qrcode, 
         string, 
-        correction_mode, 
-        encoding_mode, 
-        mask
+        encoding_mode
     );
 
     pattern_reserve_all_patterns(&mask_matrix);
