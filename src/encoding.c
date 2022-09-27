@@ -10,7 +10,7 @@
 static const char* ALPHANUMERIC_CHARS = "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ $%*+-./:";
 
 // TODO: warning when out of bound
-Array* encoding_encode_int_to_binary(int value, size_t bit_count) {
+Array* encode_int_to_binary(int value, size_t bit_count) {
     Array* array = array_alloc_zeros(bit_count);
     size_t idx = array->capacity - array->size - 1;
     array->size = bit_count;
@@ -24,7 +24,7 @@ Array* encoding_encode_int_to_binary(int value, size_t bit_count) {
     return array;
 }
 
-int encoding_decode_binary_to_int(Array* arr) {
+int decode_binary_to_int(Array* arr) {
     int result = 0;
     for(size_t i = 0; i < arr->size; i++) {
         result += pow(2, i) * arr->values[arr->size - 1 - i];
@@ -33,7 +33,7 @@ int encoding_decode_binary_to_int(Array* arr) {
     return result;
 }
 
-int encoding_get_alphanumeric_value(char character) {
+int get_alphanumeric_value(char character) {
     if(!strchr(ALPHANUMERIC_CHARS, character)) {
         fprintf(stderr, "ERROR `%c` is not an alphanumeric character\n", character);
         exit(1);
@@ -42,21 +42,21 @@ int encoding_get_alphanumeric_value(char character) {
     return (int) (strchr(ALPHANUMERIC_CHARS, character) - ALPHANUMERIC_CHARS);
 }
 
-static int encoding_encode_alphanumeric_pair(char char1, char char2) {
+static int encode_alphanumeric_pair(char char1, char char2) {
     // printf("alpha_pair `%c` `%c` %d\n", char1, char2, char2 == '\0');
-    int first_char_encoding = encoding_get_alphanumeric_value(char1);
+    int first_char_encoding = get_alphanumeric_value(char1);
 
     return char2 == '\0' ? first_char_encoding 
-        : first_char_encoding * 45 + encoding_get_alphanumeric_value(char2);
+        : first_char_encoding * 45 + get_alphanumeric_value(char2);
 }
 
-int* encoding_alphanumeric_values(char* string, size_t length) {
+int* encode_alphanumeric_values(char* string, size_t length) {
     size_t pairs_length = length / 2 + length % 2;
     int* result = (int*) malloc(sizeof(int) * pairs_length);
     // printf("-- `%s` %zu %zu \n", string, length, strlen(string));
 
     for(size_t i = 0; i < length; i += 2) {
-        result[i / 2] = encoding_encode_alphanumeric_pair(
+        result[i / 2] = encode_alphanumeric_pair(
             string[i],
             i < length -1 ? string[i + 1] : '\0'
         );
@@ -65,7 +65,7 @@ int* encoding_alphanumeric_values(char* string, size_t length) {
     return result;
 }
 
-Array* encoding_encode_alphanumeric_string(char* string) {
+Array* encode_alphanumeric_string(char* string) {
     const size_t ALPHANUMERIC_BIT_LENGTH = 11;
     const size_t ALPHANUMERIC_ODD_BIT_LENGTH = 6;
     size_t length = strlen(string);
@@ -73,10 +73,10 @@ Array* encoding_encode_alphanumeric_string(char* string) {
     size_t binary_length = pairs_length * ALPHANUMERIC_BIT_LENGTH;
     Array* result = array_alloc(binary_length);
     printf("LENGTH %zu\n", length);
-    int* pairs_values = encoding_alphanumeric_values(string, length);
+    int* pairs_values = encode_alphanumeric_values(string, length);
 
     for(size_t i = 0; i < length / 2; i++) {
-        Array* binary_encoding = encoding_encode_int_to_binary(
+        Array* binary_encoding = encode_int_to_binary(
             pairs_values[i],
             ALPHANUMERIC_BIT_LENGTH
         );
@@ -85,7 +85,7 @@ Array* encoding_encode_alphanumeric_string(char* string) {
     }
     
     if(length % 2) {
-        Array* binary_encoding = encoding_encode_int_to_binary(
+        Array* binary_encoding = encode_int_to_binary(
             pairs_values[pairs_length - 1],
             ALPHANUMERIC_ODD_BIT_LENGTH
         );
@@ -97,7 +97,7 @@ Array* encoding_encode_alphanumeric_string(char* string) {
     return result;
 }
 
-static Array* encoding_add_terminator(Array* self) {
+static Array* add_terminator(Array* self) {
     int maximum = 4;
 
     while(maximum-- && self->size < self->capacity) {
@@ -107,7 +107,7 @@ static Array* encoding_add_terminator(Array* self) {
     return self;
 }
 
-static Array* encoding_pad_to_eight_bits(Array* self) {
+static Array* pad_to_eight_bits(Array* self) {
     while(self->size % 8) {
         array_append_value(self, false);
     }
@@ -115,7 +115,7 @@ static Array* encoding_pad_to_eight_bits(Array* self) {
     return self;
 }
 
-static Array* encoding_add_final_padding(Array* self) {
+static Array* add_final_padding(Array* self) {
     Array pad_bytes[2] = {{
         (bool[8]) {true, true, true, false, true, true, false, false}, // 236
         8,
@@ -137,14 +137,14 @@ static Array* encoding_add_final_padding(Array* self) {
 }
 
 // Note: the array must already be the size of the final message
-Array* encoding_pad_codewords(Array* self) {
-    encoding_add_terminator(self);
-    encoding_pad_to_eight_bits(self);
-    return encoding_add_final_padding(self);
+Array* pad_codewords(Array* self) {
+    add_terminator(self);
+    pad_to_eight_bits(self);
+    return add_final_padding(self);
 }
 
 // TODO: complete later
-size_t encoding_get_number_codewords(int version, EncodingMode mode) {
+size_t get_number_codewords(int version, EncodingMode mode) {
     assert(version == 1 && mode == ALPHANUMERIC);
     // TODO: set back to 16 after tests
     // return 16;

@@ -2,7 +2,7 @@
 #include "encoding.h"
 
 Array* mask_convert_to_binary(MaskPattern mask) {
-    return encoding_encode_int_to_binary(mask, 3);
+    return encode_int_to_binary(mask, 3);
 }
 
 static bool mask_compute_mask0(size_t idx, size_t qrcode_size) {

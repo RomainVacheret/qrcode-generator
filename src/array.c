@@ -155,3 +155,95 @@ char* array_as_string(Array* self) {
 Array* array_copy(Array* self) {
     return array_alloc_values(self->capacity, self->values);
 }
+
+bool array_is_full_zeros(Array* self) {
+    for(size_t i = 0; i < self->size; i++) {
+        if(self->values[i]) {
+            return false;
+        }
+    }
+
+    return true;
+}
+
+
+Array* array_perform_xor(Array* self, Array* other) {
+	Array* self_copy = array_copy(self);
+
+    for(size_t i = 0; i < 15; i++) {
+        self->values[i] ^= other->values[i];
+    }
+
+    // -- logging -- 
+    char* str = "";
+    char* self_str = array_as_string(self_copy);
+    char* other_str = array_as_string(other);
+    char* result_str = array_as_string(self);
+
+    asprintf(
+        &str, 
+        "array_perform_xor - self: %s, other: %s, result: %s",
+        self_str,
+        other_str,
+        result_str
+    );
+    logger_write(LOGGER, str, DEBUG);
+
+    array_free(self_copy);
+    free(str);
+    free(self_str);
+    free(other_str);
+    free(result_str);
+
+    return self;
+}
+
+Array* array_remove_leading_zeros(Array* self) {
+    size_t idx = 0, zero_count = 0;
+    Array* self_copy = array_copy(self);
+
+	// In case of M / 4 which results in 00 / 000
+    if(array_is_full_zeros(self)) {
+        char* str;
+        asprintf(
+            &str, 
+            "array_remove_leading_zeros - size: %zu, capacity %zu - is full or zeros",
+            self->size,
+            self->capacity
+        );
+        logger_write(LOGGER, str, WARNING);
+        free(str);
+
+        return self;
+    }
+
+    while(!self->values[idx]){
+        idx++;
+        zero_count++;
+    }
+
+    for(size_t i = zero_count; i < self->size; i++) {
+        self->values[i - zero_count] = self->values[i]; 
+    }
+    self->size -= zero_count;
+
+    // -- logging --
+    char* str;
+    char* self_str = array_as_string(self_copy);
+    char* result_str = array_as_string(self);
+
+    asprintf(
+        &str,
+        "array_remove_leading_zeros - self: %s, result: %s",
+        self_str,
+        result_str
+    );
+    logger_write(LOGGER, str, DEBUG);
+
+    array_free(self_copy);
+    free(str);
+    free(self_str);
+    free(result_str);
+
+    return self;
+}

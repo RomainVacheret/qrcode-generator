@@ -27,5 +27,8 @@ void array_display(Array* self);
 void array_display_full(Array* self);
 char* array_as_string(Array* self);
 Array* array_copy(Array* self);
+bool array_is_full_zeros(Array* self);
+Array* array_perform_xor(Array* self, Array* other);
+Array* array_remove_leading_zeros(Array* self);
 
 #endif // ARRAY_H

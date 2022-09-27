@@ -8,14 +8,14 @@ int main() {
     LOGGER = logger_alloc(DEBUG, stdout); 
     char* alph_string = "HELLO WORLD";
     EncodingMode encoding_mode = ALPHANUMERIC;
-    ErrorCorrectionLevel correction_mode = M;
+    ErrorCorrectionLevel correction_mode = L;
     // TODO: fix format string when mask != 2
     // Warning: do not use another mask!
-    MaskPattern mask = MASK_2;
+    MaskPattern mask = MASK_3;
     /*
-        FORMAT STRING
+        FORMAT STRING with M
         masks:
-            0: seg fault, should be: 101010000010010
+            0: M/4 - 00/000 -> what to do? Should be: 101010000010010
             1: false, is: [1, 0, 1, 0, 0, 1, 0, 0, 1, 1, 1, 1, 1, 0, 0], should be: 101000100100101
             2: ok
             3: ok
@@ -40,6 +40,7 @@ int main() {
     fclose(file);
 
     qrcode_free(qrcode);
+    free(LOGGER);
 
     return EXIT_SUCCESS;
 }

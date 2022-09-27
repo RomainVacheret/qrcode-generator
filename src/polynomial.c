@@ -102,7 +102,7 @@ Polynomial* polynomial_create_from_info(Array* info) {
 
     for(size_t i = 0; i < info->size; i += 8) {
         memcpy(arr->values, info->values + i, 8);
-        self->values[i / 8] = encoding_decode_binary_to_int(arr);
+        self->values[i / 8] = decode_binary_to_int(arr);
     }
 
     array_free(arr);
