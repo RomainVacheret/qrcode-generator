@@ -2,16 +2,17 @@
 #include <string.h>
 
 #include "src/qrcode.h"
+#include "src/gui.h"
 #include "src/logger.h"
 
 int main() {
     LOGGER = logger_alloc(DEBUG, stdout); 
     char* alph_string = "HELLO WORLD";
     EncodingMode encoding_mode = ALPHANUMERIC;
-    ErrorCorrectionLevel correction_mode = L;
+    ErrorCorrectionLevel correction_mode = M;
     // TODO: fix format string when mask != 2
     // Warning: do not use another mask!
-    MaskPattern mask = MASK_3;
+    MaskPattern mask = MASK_2;
     /*
         FORMAT STRING with M
         masks:
@@ -33,11 +34,7 @@ int main() {
         version
     );
 
-    // TODO: replace the Python scrip with OpenGL
-    // Note: export to display using the Python script
-    FILE* file = fopen("result.txt", "w");
-    qrcode_display(qrcode, file);
-    fclose(file);
+    display_qrcode(qrcode);
 
     qrcode_free(qrcode);
     free(LOGGER);
